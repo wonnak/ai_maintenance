@@ -1,4 +1,4 @@
-# AI 유지보수 프롬프트
+# AI 기반 스크립트 유지보수 프롬프트
 
 ---
 
@@ -25,7 +25,7 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 ## ✅ 주요 경로 및 파일 정보
 
 - 테스트스크립트는 "tests/” 폴더 안에 있습니다.
-- 테스트가 실패될 때마다 에러 메시지가 포함된 콘솔 출력은 fails/<테스트케이스명>.log에 저장됩니다.
+- 테스트가 실패될 때마다 에러 메시지 등이 포함된 정보는 fails/<테스트케이스명>.json에 저장됩니다.
 - 테스트가 실행될 때마다 HTML 스냅샷은 `htmls/<테스트케이스명>/YYYY-MM-DD_HH-mm-ss/` 경로에 저장됩니다.
 - `htmls/<테스트케이스명>/YYYY-MM-DD_HH-mm-ss/` 경로에 저장되는 HTML 파일은 001.html -> 002.html -> 003.html -> ... 과 같이 세자리 수 순서대로 생성됩니다.
 - 성공 시 가장 최근 테스트의 HTML 스냅샷 폴더를 `lastSuccessHtmls`라는 폴더 이름으로 복사합니다.
@@ -33,8 +33,53 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 
 ---
 
+## ✅ fails/<테스트케이스명>.json JSON구조 및 필드 설명
+### 1. 기본 구조
+```json
+{
+  "testTitle": "<value>",
+  "status": "<value>",
+  "error": {
+    "message": "<value>",
+    "stack": "<value>",
+    "location": {
+      "file": "<value>",
+      "column": "<value>",
+      "line": "<value>"
+    },
+    "snippet": "<value>"
+  },
+  "duration": "<value>"
+}
+```
+
+### 2. Root 레벨 필드
+| 필드        | 타입      | 필수 여부 | 설명                                                                 |
+|-------------|-----------|-----------|----------------------------------------------------------------------|
+| `testTitle` | string    | Yes       | 테스트 케이스 이름 (예: `TC_0001_login_naverWebSite`)               |
+| `status`    | string    | Yes       | `passed`/`failed`/`timedOut`/`skipped` 중 하나                      |
+| `error`     | object    | No        | 실패 시에만 존재 (성공 시 `null`)                                   |
+| `duration`  | number    | Yes       | 테스트 실행 시간(ms)                                                |
+
+### 3. error 객체
+| 필드       | 타입      | 필수 여부 | 설명                                                                 |
+|------------|-----------|-----------|----------------------------------------------------------------------|
+| `message`  | string    | Yes       | ANSI 코드 제거된 오류 메시지 (예: 타임아웃, 요소 미찾음)            |
+| `stack`    | string    | Yes       | 오류 발생 경로 (디버깅용 스택 트레이스)                             |
+| `location` | object    | Yes       | 오류 위치 정보 (파일, 라인, 컬럼)                                   |
+| `snippet`  | string    | Yes       | 오류 라인 주변 코드 (컨텍스트 제공)                                 |
+
+### 4. location 객체
+| 필드      | 타입      | 필수 여부 | 설명                                                                 |
+|-----------|-----------|-----------|----------------------------------------------------------------------|
+| `file`    | string    | Yes       | 테스트 파일 절대 경로 (예: `/Users/.../naver.spec.ts`)               |
+| `line`    | number    | Yes       | 오류 라인 번호 (1부터 시작)                                         |
+| `column`  | number    | Yes       | 오류 컬럼 위치 (문자 단위)                                          |
+
+---
+
 ### ✅ 테스트케이스 TC_0001_login_naverWebSite에 대한 테스트스크립트 유지보수를 위한 레퍼런스
-- 실패한 최근 테스트 스크립트 라인 정보: fails/TC_0001_login_naverWebSite.log (Playwright 에러 메시지 포함한)
+- 실패한 최근 테스트 정보: fails/TC_0001_login_naverWebSite.json (Playwright 에러 메시지 포함한)
 - 실패한 최근 테스트의 가장 마지막 HTML 파일: htmls/TC_0001_login_naverWebSite/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html (실패한 시점에 해당되는 가장 마지막 HTML 파일.)
 - 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일: htmls/TC_0001_login_naverWebSite/lastSucessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html (최근에 성공한 시점의 HTML 파일들 폴더)
 - 성공한 최근 테스트 스크립트: tests/naver.spec.ts 내의 TC_0001_login_naverWebSite 테스트케이스 
@@ -43,7 +88,7 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 
 ### 💡 레퍼런스 참고 순서
 
-1. fails/TC_0001_login_naverWebSite.log 확인
+1. fails/TC_0001_login_naverWebSite.json 확인
   - Playwright의 에러 메시지와 실패한 코드 라인을 분석하여 수정이 필요한 구체적인 위치와 원인을 파악하세요.
   - 실패 원인(예: element not found, timeout 등)에 따라 어떤 selector나 대기 조건이 문제인지 유추할 수 있습니다.
 2. htmls/TC_0001_login_naverWebSite/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html 분석

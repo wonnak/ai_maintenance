@@ -16,52 +16,54 @@ import type {
       console.log(`Test on`);
       this.logMap.set(test.id, []);
     }
-  
-    onStdOut(chunk: string | Buffer, test?: TestCase) {
-        console.log(`Test onStdOut`);
-      if (test) {
-        this.logMap.get(test.id)?.push(chunk.toString());
-      }
-    }
-  
-    onStdErr(chunk: string | Buffer, test?: TestCase) {
-      console.log(`Test onStdErr`);
-      if (test) {
-        this.logMap.get(test.id)?.push(chunk.toString());
-      }
-    }
-  
-    async onTestEnd(test: TestCase, result: TestResult) {
-      console.log(`Test ended: ${test.title}`);
-      console.log(`Test result: ${result.status}`);
-      //if (result.status === 'failed') {
-      if (result.status === 'failed' || result.status === 'timedOut') {
-        //console.log(result);
-        console.log(result.error?.snippet);
-        // for (const error of result.errors) {
-        //     console.log('🔴 Error message:', error.message);
-        //   }
-        const testName = test.titlePath().join(' - ').replace(/[^\w\d-]/g, '_');
-        const dir = path.join(process.cwd(), 'fails');
-        //const filePath = path.join(dir, `${testName}.log`);
-        const filePath = path.join(dir, `${test.title}.log`);
-        console.log(`filePath: ${filePath}`);
-
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
+    
+    onTestEnd(test: TestCase, result: TestResult) {
+        if (result.status === 'failed' || result.status === 'timedOut') {
+            try {
+                // 1. ANSI 코드 제거 및 객체 복제
+                const cleanError = result.error ? {
+                ...result.error,
+                message: stripAnsi(result.error.message || ''),
+                stack: stripAnsi(result.error.stack || ''),
+                snippet: stripAnsi(result.error.snippet || '')
+                } : null;
+        
+                // 2. 저장 디렉토리 생성
+                const outputDir = path.join(process.cwd(), 'fails');
+                fs.mkdirSync(outputDir, { recursive: true });
+        
+                // 3. 안전한 파일명 생성
+                //const safeTestName = test.title.replace(/[^a-z0-9]/gi, '_');
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                //const filename = `error_${safeTestName}_${timestamp}.json`;
+                const filename = `${test.title}.json`;
+        
+                // 4. JSON으로 변환 (순환 참조 처리 포함)
+                const jsonString = JSON.stringify(
+                    {
+                        testTitle: test.title,
+                        status: result.status,
+                        error: cleanError,
+                        duration: result.duration
+                    },
+                    (key, value) => {
+                        // 순환 참조 처리
+                        if (typeof value === 'object' && value !== null) {
+                        if (key === 'test' || key === 'result') return '[Circular]';
+                        }
+                        return value;
+                    },
+                    2  // 들여쓰기 2칸
+                );
+    
+                // 5. 파일 저장
+                fs.writeFileSync(path.join(outputDir, filename), jsonString, 'utf-8');
+                console.log(`Error saved to: ${path.join(outputDir, filename)}`);
+            } catch (error) {
+                console.error('Failed to save test error:', error);
+            }
         }
-  
-        // 여기서 에러 메시지 추출
-        const errorMessage = result.error?.message || 'No error message';
-        const errorStack = result.error?.stack || '';
-        const fullLog = `${errorMessage}\n\n${errorStack}`;
-
-        fs.writeFileSync(filePath, fullLog, 'utf-8');
-      }
-  
-      // 로그 메모리 정리
-      this.logMap.delete(test.id);
-    }
+  }
   
     onEnd(result: FullResult) {
       // 전체 테스트 종료 후 동작 (필요 시)

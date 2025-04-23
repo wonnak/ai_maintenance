@@ -125,4 +125,51 @@ export const test = baseTest.extend<{
   },
 });
 
+// 테스트 종료 시 실행되는 훅
+test.afterEach(async ({}, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) {
+    const testName = testInfo.title.replace(/\s+/g, '_');
+    const htmlsPath = path.join('htmls', testName);
+    const lastSuccessPath = path.join(htmlsPath, 'lastSuccessHtmls');
+
+    // htmls 폴더가 존재하는지 확인
+    if (fs.existsSync(htmlsPath)) {
+      // 가장 최근 폴더 찾기
+      const folders = fs.readdirSync(htmlsPath)
+        .filter(item => fs.statSync(path.join(htmlsPath, item)).isDirectory())
+        .filter(item => item !== 'lastSuccessHtmls') // lastSuccessHtmls 폴더는 제외
+        .sort((a, b) => {
+          const timeA = new Date(a.replace(/_/g, ':')).getTime();
+          const timeB = new Date(b.replace(/_/g, ':')).getTime();
+          return timeB - timeA;
+        });
+
+      if (folders.length > 0) {
+        const latestFolder = folders[0];
+        const sourcePath = path.join(htmlsPath, latestFolder);
+
+        // lastSuccessHtmls 폴더가 있으면 삭제
+        if (fs.existsSync(lastSuccessPath)) {
+          fs.rmSync(lastSuccessPath, { recursive: true, force: true });
+        }
+
+        // lastSuccessHtmls 폴더 생성
+        fs.mkdirSync(lastSuccessPath, { recursive: true });
+
+        // HTML 파일들을 직접 복사
+        const htmlFiles = fs.readdirSync(sourcePath)
+          .filter(file => file.endsWith('.html'));
+
+        for (const file of htmlFiles) {
+          const sourceFile = path.join(sourcePath, file);
+          const targetFile = path.join(lastSuccessPath, file);
+          fs.copyFileSync(sourceFile, targetFile);
+        }
+
+        console.log(`Copied latest HTML snapshots to ${lastSuccessPath}`);
+      }
+    }
+  }
+});
+
 export { expect } from '@playwright/test';

@@ -15,7 +15,7 @@ async function saveHtmlSnapshot(page: Page, testInfo: TestInfo, actionIndex: num
   // if (actionName === 'selectOption') {
   //   await page.waitForTimeout(200);
   // }
-  await page.waitForTimeout(1000); //500은 너무 적은가 error가 남.
+  await page.waitForTimeout(3000); //500은 너무 적은가 error가 남.
   await page.waitForLoadState('networkidle');
 
   const htmlContent = await page.content();
@@ -134,31 +134,35 @@ test.afterEach(async ({}, testInfo) => {
 
     // htmls 폴더가 존재하는지 확인
     if (fs.existsSync(htmlsPath)) {
-      // 가장 최근 폴더 찾기
+      // 가장 최근 폴더 찾기 (lastSuccessHtmls 폴더는 제외)
       const folders = fs.readdirSync(htmlsPath)
-        .filter(item => fs.statSync(path.join(htmlsPath, item)).isDirectory())
-        .filter(item => item !== 'lastSuccessHtmls') // lastSuccessHtmls 폴더는 제외
+        .filter(item => {
+          const itemPath = path.join(htmlsPath, item);
+          return fs.statSync(itemPath).isDirectory() && item !== 'lastSuccessHtmls';
+        })
         .sort((a, b) => {
-          const timeA = new Date(a.replace(/_/g, ':')).getTime();
-          const timeB = new Date(b.replace(/_/g, ':')).getTime();
-          return timeB - timeA;
+          // 문자열 날짜 형식이 "2025-04-17_04-43-33"와 같으므로
+          // 단순 문자열 비교로 정렬 (내림차순)
+          return b.localeCompare(a);
         });
 
       if (folders.length > 0) {
         const latestFolder = folders[0];
         const sourcePath = path.join(htmlsPath, latestFolder);
 
-        // lastSuccessHtmls 폴더가 있으면 삭제
+        // lastSuccessHtmls 폴더가 있으면 명시적으로 삭제
         if (fs.existsSync(lastSuccessPath)) {
+          console.log(`Removing existing lastSuccessHtmls folder: ${lastSuccessPath}`);
           fs.rmSync(lastSuccessPath, { recursive: true, force: true });
         }
 
-        // lastSuccessHtmls 폴더 생성
+        // lastSuccessHtmls 폴더 생성 (htmls/testName/ 경로에만 생성)
         fs.mkdirSync(lastSuccessPath, { recursive: true });
+        console.log(`Created lastSuccessHtmls folder: ${lastSuccessPath}`);
 
-        // HTML 파일들을 직접 복사
+        // HTML 파일들을 개별적으로 복사 (하위 디렉토리는 복사하지 않음)
         const htmlFiles = fs.readdirSync(sourcePath)
-          .filter(file => file.endsWith('.html'));
+          .filter(file => file.endsWith('.html') && !fs.statSync(path.join(sourcePath, file)).isDirectory());
 
         for (const file of htmlFiles) {
           const sourceFile = path.join(sourcePath, file);
@@ -166,7 +170,7 @@ test.afterEach(async ({}, testInfo) => {
           fs.copyFileSync(sourceFile, targetFile);
         }
 
-        console.log(`Copied latest HTML snapshots to ${lastSuccessPath}`);
+        console.log(`Copied latest HTML snapshots from ${sourcePath} to ${lastSuccessPath}`);
       }
     }
   }

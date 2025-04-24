@@ -4,7 +4,7 @@
 
 ### 🔧 목적:
 
-아래 명령어로 테스트 스크립를 실행합니다.
+아래 명령어로 테스트스크립트를 실행합니다.
 
 ```
 npx playwright test tests/naver.spec.ts
@@ -25,7 +25,7 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 ## ✅ 주요 경로 및 파일 정보
 
 - 테스트스크립트는 "tests/” 폴더 안에 있습니다.
-- 테스트가 실패될 때마다 에러 메시지 등이 포함된 정보는 fails/<테스트케이스명>.json에 저장됩니다.
+- 테스트가 실패될 때마다 에러 메시지 등이 포함된 정보는 fails/<테스트케이스명>.log에 저장됩니다.
 - 테스트가 실행될 때마다 HTML 스냅샷은 `htmls/<테스트케이스명>/YYYY-MM-DD_HH-mm-ss/` 경로에 저장됩니다.
 - `htmls/<테스트케이스명>/YYYY-MM-DD_HH-mm-ss/` 경로에 저장되는 HTML 파일은 001.html -> 002.html -> 003.html -> ... 과 같이 세자리 수 순서대로 생성됩니다.
 - 성공 시 가장 최근 테스트의 HTML 스냅샷 폴더를 `lastSuccessHtmls`라는 폴더 이름으로 복사합니다.
@@ -33,68 +33,23 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 
 ---
 
-## ✅ fails/<테스트케이스명>.json JSON구조 및 필드 설명
-### 1. 기본 구조
-```json
-{
-  "testTitle": "<value>",
-  "status": "<value>",
-  "error": {
-    "message": "<value>",
-    "stack": "<value>",
-    "location": {
-      "file": "<value>",
-      "column": "<value>",
-      "line": "<value>"
-    },
-    "snippet": "<value>"
-  },
-  "duration": "<value>"
-}
-```
-
-### 2. Root 레벨 필드
-| 필드        | 타입      | 필수 여부 | 설명                                                                 |
-|-------------|-----------|-----------|----------------------------------------------------------------------|
-| `testTitle` | string    | Yes       | 테스트 케이스 이름 (예: `TC_0001_login_naverWebSite`)               |
-| `status`    | string    | Yes       | `passed`/`failed`/`timedOut`/`skipped` 중 하나                      |
-| `error`     | object    | No        | 실패 시에만 존재 (성공 시 `null`)                                   |
-| `duration`  | number    | Yes       | 테스트 실행 시간(ms)                                                |
-
-### 3. error 객체
-| 필드       | 타입      | 필수 여부 | 설명                                                                 |
-|------------|-----------|-----------|----------------------------------------------------------------------|
-| `message`  | string    | Yes       | ANSI 코드 제거된 오류 메시지 (예: 타임아웃, 요소 미찾음)            |
-| `stack`    | string    | Yes       | 오류 발생 경로 (디버깅용 스택 트레이스)                             |
-| `location` | object    | Yes       | 오류 위치 정보 (파일, 라인, 컬럼)                                   |
-| `snippet`  | string    | Yes       | 오류 라인 주변 코드 (컨텍스트 제공)                                 |
-
-### 4. location 객체
-| 필드      | 타입      | 필수 여부 | 설명                                                                 |
-|-----------|-----------|-----------|----------------------------------------------------------------------|
-| `file`    | string    | Yes       | 테스트 파일 절대 경로 (예: `/Users/.../naver.spec.ts`)               |
-| `line`    | number    | Yes       | 오류 라인 번호 (1부터 시작)                                         |
-| `column`  | number    | Yes       | 오류 컬럼 위치 (문자 단위)                                          |
-
----
-
 ### ✅ 테스트케이스 TC_0001_login_naverWebSite에 대한 테스트스크립트 유지보수를 위한 레퍼런스
-- 실패한 최근 테스트 정보: fails/TC_0001_login_naverWebSite.json (Playwright 에러 메시지 포함한)
+- 실패한 최근 테스트 정보: fails/TC_0001_login_naverWebSite.log (Playwright 에러 메시지 포함한)
 - 실패한 최근 테스트의 가장 마지막 HTML 파일: htmls/TC_0001_login_naverWebSite/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html (실패한 시점에 해당되는 가장 마지막 HTML 파일.)
-- 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일: htmls/TC_0001_login_naverWebSite/lastSucessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html (최근에 성공한 시점의 HTML 파일들 폴더)
+- 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일: htmls/TC_0001_login_naverWebSite/lastSuccessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html (최근에 성공한 시점의 HTML 파일들 폴더)
 - 성공한 최근 테스트 스크립트: tests/naver.spec.ts 내의 TC_0001_login_naverWebSite 테스트케이스 
 
 ---
 
 ### 💡 레퍼런스 참고 순서
 
-1. fails/TC_0001_login_naverWebSite.json 확인
+1. fails/TC_0001_login_naverWebSite.log 확인
   - Playwright의 에러 메시지와 실패한 코드 라인을 분석하여 수정이 필요한 구체적인 위치와 원인을 파악하세요.
   - 실패 원인(예: element not found, timeout 등)에 따라 어떤 selector나 대기 조건이 문제인지 유추할 수 있습니다.
 2. htmls/TC_0001_login_naverWebSite/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html 분석
   - 실패 당시의 웹 페이지 구조를 확인하여, 실패한 지점의 DOM 구조 및 selector 상태를 파악하세요.
   - 이 시점의 실제 페이지 상태를 기준으로 수정 방안을 고려합니다.
-3. htmls/TC_0001_login_naverWebSite/lastSucessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html 비교 분석
+3. htmls/TC_0001_login_naverWebSite/lastSuccessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html 비교 분석
   - 마지막으로 성공했던 시점의 HTML과 실패 시점 HTML을 비교하여 변경된 요소, 구조, 속성 등 차이점을 찾아내세요.
   - 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일을 가져와 비교합니다.
   - 변화된 selector나 역할(role) 속성 등을 식별하여 코드에 반영합니다.
@@ -108,10 +63,14 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 - 웹페이지의 변화로 인해 실패한 테스트 코드의 **해당 부분만 수정**해 주세요.
 - 테스트의 목적은 **그대로 유지**되어야 합니다.
 - 주어진 성공/실패 시점 HTML과 실패 라인 정보를 기반으로 **변화된 selector, DOM 구조, 조건 등을 반영**해 주세요.
-- 필요 시 다음을 적용해 주세요:
-    - selector 수정
-    - `waitForSelector`, `locator`, `timeout`, `getByRole` 등의 조건 추가
-    - 클릭 방식, 대기 방식 등
+- **Selector 함수는 다음 우선순위를 반드시 따릅니다 (상단 함수 우선 사용):**
+  1. `page.getByRole()`
+  2. `page.getByText()`
+  3. `page.getByLabel()`
+  4. `page.getByPlaceholder()`
+  5. `page.locator()` ← 이 함수는 위 함수들로 식별이 불가능한 경우에만 사용하세요.
+- 가능한 경우 `<button>`, `<link>`, `<textbox>` 등의 role 속성 확인 후 `page.getByRole()` 사용을 우선 고려하세요.
+- AI가 `page.locator`를 기본적으로 사용하는 것을 방지하기 위해, **명시적 우선순위 준수는 필수**입니다.
 
 ---
 
@@ -130,3 +89,7 @@ TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 - 실패 원인과 HTML 구조 변화에 대한 설명
 - 추가로 테스트의 안정성을 높일 수 있는 개선사항이 있다면 함께 제안.
 ```
+
+---
+
+## 📚 참고: [Playwright selectors 공식 문서](https://playwright.dev/docs/selectors)

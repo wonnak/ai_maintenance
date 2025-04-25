@@ -2,3 +2,4 @@ fails/
 test-results/
 playwright-report/
 htmls/
+node_modules/

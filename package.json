@@ -12,6 +12,8 @@
     "@types/node": "^22.13.13"
   },
   "dependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "adm-zip": "^0.5.16",
     "strip-ansi": "^7.1.0"
   }
 }

@@ -25,15 +25,20 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   // reporter: 'html',
-  reporter: [['dot'], [path.resolve(__dirname, './log-on-fail-reporter.ts')]],
+  reporter: [['html'], ['dot'], [path.resolve(__dirname, './log-on-fail-reporter.ts')]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'https://mail.naver.com',
-    viewport: { width: 1280, height: 720 },
+    headless: false,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
+    //storageState: 'auth.json',
+    screenshot: 'only-on-failure', 
+    viewport: { width: 1920, height: 1080 },
+    video: {
+      mode: 'retain-on-failure',
+      size : {width: 1920, height: 1080},
+    },
+    trace: 'retain-on-failure', 
   },
 
   /* Configure projects for major browsers */

@@ -14,6 +14,7 @@
   "dependencies": {
     "@types/adm-zip": "^0.5.7",
     "adm-zip": "^0.5.16",
-    "strip-ansi": "^7.1.0"
+    "strip-ansi": "^7.1.0",
+    "unzipper": "^0.12.3"
   }
 }

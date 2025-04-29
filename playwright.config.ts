@@ -30,6 +30,9 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     headless: false,
+    baseURL: 'https://wkupdate2.somansa.com/DLPCenter/',
+    //baseURL: 'https://sv-i.somansa.com/DLPCenter/',
+    storageState: 'auth.json',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //storageState: 'auth.json',
     screenshot: 'only-on-failure', 
@@ -40,6 +43,8 @@ export default defineConfig({
     },
     trace: 'retain-on-failure', 
   },
+
+  globalSetup: require.resolve('./global-setup'), 
 
   /* Configure projects for major browsers */
   projects: [

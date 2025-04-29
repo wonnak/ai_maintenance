@@ -9,9 +9,12 @@ class LogOnFailReporter implements Reporter {
 
   onTestBegin(test: TestCase) {
     console.log(`Test started: ${test.title}`);
+    const isRunByVSCode = !!process.env.VSCODE_CWD; // VSCode에서 실행 중이면 true
+    console.log(`isRunVyVSCode : ${isRunByVSCode}`)
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
+    
     if (result.status === 'failed' || result.status === 'timedOut') {
       // 실패한 테스트만 이름 저장
       this.failedTests.push(test.title);
@@ -19,6 +22,13 @@ class LogOnFailReporter implements Reporter {
   }
 
   async onEnd(result: FullResult) {
+    const isRunByVSCode = !!process.env.VSCODE_CWD; // VSCode에서 실행 중이면 true
+    console.log(`isRunVyVSCode : ${isRunByVSCode}`)
+    if (isRunByVSCode) {
+      console.log('Skipped LogOnFailReporter during VSCode test run.');
+      return;
+    }
+    
     try {
       const outputDir = path.join(process.cwd(), 'fails');
       fs.mkdirSync(outputDir, { recursive: true });
@@ -37,7 +47,10 @@ class LogOnFailReporter implements Reporter {
 
       // data 폴더의 zip 파일들을 모두 찾기
       const dataDir = path.join(process.cwd(), 'playwright-report', 'data');
-      const files = fs.readdirSync(dataDir);
+      let files: string[] = [];
+      if (fs.existsSync(dataDir)) {
+        files = fs.readdirSync(dataDir);
+      }
 
       for (const file of files) {
         const zipPath = path.join(dataDir, file);

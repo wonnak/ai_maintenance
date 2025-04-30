@@ -12,10 +12,11 @@ async function saveHtmlSnapshot(page: Page, testInfo: TestInfo, actionIndex: num
     fs.mkdirSync(snapshotDir, { recursive: true });
   }
 
-  // if (actionName === 'selectOption') {
-  //   await page.waitForTimeout(200);
-  // }
-  await page.waitForTimeout(3000); //500은 너무 적은가 error가 남.
+  if (actionName === 'selectOption') {
+    await page.waitForTimeout(3000);
+  }
+  
+  //await page.waitForTimeout(3000); //500은 너무 적은가 error가 남.
   await page.waitForLoadState('networkidle');
 
   const htmlContent = await page.content();

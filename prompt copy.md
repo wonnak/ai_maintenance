@@ -4,30 +4,20 @@
 
 ### 🔧 목적:
 
-테스트스크립트는 아래 명령어로 실행됩니다.
+아래 명령어로 테스트스크립트를 실행합니다.
 
 ```
-npx playwright test tests/
+npx playwright test tests/naver.spec.ts
 ```
 
-
-* 웹 페이지의 변경으로 인해 Playwright 테스트가 실패할 경우, **fails/failed_tests.txt에 있는 모든 테스트케이스를 하나씩 순차적으로** 처리해 주세요.
-* 즉, 다중 실패 케이스를 자동 처리해야 합니다.
-* 각 테스트케이스에 대해, 아래 내용을 기반으로 **테스트 스크립트를 수정하여 동일한 테스트 목적을 달성하도록 유지보수**해 주세요.
+웹 페이지의 변경으로 인해 Playwright 테스트가 실패할 경우, 아래의 정보를 바탕으로 **테스트 스크립트를 수정**하여 **동일한 테스트 목적을 달성하도록** 코드를 유지보수해 주세요.
 
 ---
 
-### 📌 테스트케이스 목록 처리 방식
-
-- 처리 대상 테스트케이스들은 `fails/failed_tests.txt` 파일에 있으며, 한 줄에 하나씩 존재합니다.
-- 각 테스트케이스 이름(TC_xxxx_xxx)마다 아래의 지침을 반복 적용하여 스크립트를 수정합니다.
-
----
-
-### 📌 테스트케이스별 명세 파일
+### 📌 테스트스크립트 내의 테스트케이스 설명:
 
 ```
-test-case.txt
+TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
 ```
 
 ---
@@ -43,26 +33,27 @@ test-case.txt
 
 ---
 
-### ✅ 테스트스크립트 유지보수를 위한 레퍼런스
-- 실패한 최근 테스트 정보: fails/<테스트케이스명>.log (Playwright 에러 메시지 포함한)
-- 실패한 최근 테스트의 가장 마지막 HTML 파일: htmls/<테스트케이스명>/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html (실패한 시점에 해당되는 가장 마지막 HTML 파일.)
-- 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일: htmls/<테스트케이스명>/lastSuccessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html (최근에 성공한 시점의 HTML 파일들 폴더)
-- 성공한 최근 테스트 스크립트: tests/ 내의 스크립트 파일 중 해당 <테스트케이스명>을 갖는 test함수
+### ✅ 테스트케이스 TC_0001_login_naverWebSite에 대한 테스트스크립트 유지보수를 위한 레퍼런스
+- 실패한 최근 테스트 정보: fails/TC_0001_login_naverWebSite.log (Playwright 에러 메시지 포함한)
+- 실패한 최근 테스트의 가장 마지막 HTML 파일: htmls/TC_0001_login_naverWebSite/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html (실패한 시점에 해당되는 가장 마지막 HTML 파일.)
+- 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일: htmls/TC_0001_login_naverWebSite/lastSuccessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html (최근에 성공한 시점의 HTML 파일들 폴더)
+- 성공한 최근 테스트 스크립트: tests/naver.spec.ts 내의 TC_0001_login_naverWebSite 테스트케이스 
 
 ---
 
-### 💡 레퍼런스 참고 순서 
-1. fails/<테스트케이스명>.log 확인
+### 💡 레퍼런스 참고 순서
+
+1. fails/TC_0001_login_naverWebSite.log 확인
   - Playwright의 에러 메시지와 실패한 코드 라인을 분석하여 수정이 필요한 구체적인 위치와 원인을 파악하세요.
   - 실패 원인(예: element not found, timeout 등)에 따라 어떤 selector나 대기 조건이 문제인지 유추할 수 있습니다.
-2. htmls/<테스트케이스명>/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html 분석
+2. htmls/TC_0001_login_naverWebSite/YYYY-MM-DD_HH-mm-ss/<마지막번호>.html 분석
   - 실패 당시의 웹 페이지 구조를 확인하여, 실패한 지점의 DOM 구조 및 selector 상태를 파악하세요.
   - 이 시점의 실제 페이지 상태를 기준으로 수정 방안을 고려합니다.
-3. htmls/<테스트케이스명>/lastSuccessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html 비교 분석
+3. htmls/TC_0001_login_naverWebSite/lastSuccessHtmls/<최근 실패한 HTML파일과 동일한 번호>.html 비교 분석
   - 마지막으로 성공했던 시점의 HTML과 실패 시점 HTML을 비교하여 변경된 요소, 구조, 속성 등 차이점을 찾아내세요.
   - 성공한 최근 테스트의 html 파일 중에서 최근 실패한 HTML 파일과 동일한 번호의 파일을 가져와 비교합니다.
   - 변화된 selector나 역할(role) 속성 등을 식별하여 코드에 반영합니다.
-4. tests/ 내의 스크립트 파일 중 해당 <테스트케이스명>을 갖는 test함수
+4. 기존 tests/naver.spec.ts 참조
   - 전체 테스트 흐름과 테스트 목적을 이해하고, 수정 시 기존 목적이 유지되도록 수정 위치를 제한하여 반영하세요.
 
 ---
@@ -74,12 +65,6 @@ test-case.txt
 - 주어진 성공/실패 시점 HTML과 실패 라인 정보를 기반으로 **변화된 selector, DOM 구조, 조건 등을 반영**해 주세요.
 - **Selector 함수는 다음 우선순위를 반드시 따릅니다 (상단 함수 우선 사용):**
   1. `page.getByRole()`
-   - 만일 role="combobox"인 요소가 있다면, name 속성은 다음 순서로 찾아서 사용:
-     1) aria-labelledby로 연결된 label의 텍스트
-     2) aria-label 속성의 값
-     3) 요소 내부의 텍스트 (보이는 텍스트)
-   - 예: `<label id="selectLang" class="screen_out">Language Selection Box</label><button role="combobox" aria-labelledby="selectLang">English</button>`의 경우
-     - name은 "Language Selection Box" (aria-labelledby="selectLang"로 연결된 label의 텍스트)
   2. `page.getByText()`
   3. `page.getByLabel()`
   4. `page.getByPlaceholder()`

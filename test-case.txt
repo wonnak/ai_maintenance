@@ -1,0 +1,2 @@
+TC_0001_login_naverWebSite : 네이버 웹 사이트에 로그인 합니다.
+TC_0002_login_daumWebSite  : 다음 웹 사이트에 로그인 합니다.

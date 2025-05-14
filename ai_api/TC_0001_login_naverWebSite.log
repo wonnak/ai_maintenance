@@ -1,0 +1,18 @@
+
+Test Case: TC_0001_login_naverWebSite
+Test Info: # Test info
+
+- Name: TC_0001_login_naverWebSite
+- Location: C:\Users\somansa\ai_maintenance\tests\naver.spec.ts:4:5
+
+# Error details
+Error Details: 
+Error: locator.apply: Test timeout of 30000ms exceeded.
+Call log:
+  - waiting for getByRole('combobox', { name: '언어선택' })
+
+    at overrideAction (C:\Users\somansa\ai_maintenance\fixtures.ts:33:41)
+    at Locator.selectOption (C:\Users\somansa\ai_maintenance\fixtures.ts:46:5)
+    at C:\Users\somansa\ai_maintenance\tests\naver.spec.ts:6:56
+
+              

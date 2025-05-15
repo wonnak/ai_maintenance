@@ -1,5 +1,4 @@
-//import { test, expect } from '@playwright/test';
-import { test } from '../fixtures';
+import { test } from '../../fixtures';
 
 test('TC_0001_login_naverWebSite', async ({ page }) => {
   await page.goto('https://nid.naver.com');

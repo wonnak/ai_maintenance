@@ -14,7 +14,6 @@ class LogOnFailReporter implements Reporter {
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
-    
     if (result.status === 'failed' || result.status === 'timedOut') {
       // 실패한 테스트만 이름 저장
       this.failedTests.push(test.title);

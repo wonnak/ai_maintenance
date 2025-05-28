@@ -42,47 +42,46 @@ pipeline {
     }
 
     stage('Create Diffs (Parallel)') {
-      when {
-        expression { params.RUN_CREATE_DIFFS }
-      }
-      steps {
-        script {
-          def tcList = readFile("${TARGET_LIST}").split("\\r?\\n").findAll { it.trim() }
-
-          def parallelStages = [:]
-          for (def tc in tcList) {
-            def tcName = tc.trim()
-            parallelStages[tcName] = {
-              stage("Diff: ${tcName}") {
-                echo "Creating diff for ${tcName}..."
-                sh "npx tsx create_diff.ts ${tcName}"
-              }
-            }
-          }
-
-          parallel parallelStages
+        when {
+            expression { params.RUN_CREATE_DIFFS }
         }
-      }
-    }
+        steps {
+            script {
+            def lines = readFile("${TARGET_LIST}").split("\\r?\\n").findAll { it.trim() }
+
+            def parallelStages = [:]
+            for (def line in lines) {
+                def (tcName, _) = line.tokenize('|')
+                parallelStages[tcName] = {
+                stage("Diff: ${tcName}") {
+                    echo "Creating diff for ${tcName}..."
+                    sh "npx tsx create_diff.ts ${tcName}"
+                }
+                }
+            }
+
+            parallel parallelStages
+            }
+        }
+        }
 
     stage('Apply Diffs (Serial)') {
-      when {
-        expression { params.RUN_APPLY_DIFFS }
-      }
-      steps {
-        script {
-          def tcList = readFile("${TARGET_LIST}").split("\\r?\\n").findAll { it.trim() }
-
-          for (def tc in tcList) {
-            def tcName = tc.trim()
-            def patchFile = "${DIFFS_DIR}/${tcName}.diff"
-            def testFile = "tests/${tcName}.spec.ts"
-
-            echo "Applying diff to ${testFile}"
-            sh "patch ${testFile} -i ${patchFile}"
-          }
+        when {
+            expression { params.RUN_APPLY_DIFFS }
         }
-      }
+        steps {
+            script {
+            def lines = readFile("${TARGET_LIST}").split("\\r?\\n").findAll { it.trim() }
+
+            for (def line in lines) {
+                def (tcName, testFile) = line.tokenize('|')
+                def patchFile = "${DIFFS_DIR}/${tcName}.diff"
+
+                echo "Applying diff to ${testFile}"
+                sh "patch ${testFile} -i ${patchFile}"
+            }
+            }
+        }
     }
 
     stage('Run Tests') {

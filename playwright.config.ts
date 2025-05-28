@@ -31,7 +31,7 @@ export default defineConfig({
     ['html'],
     ['dot'],
     ['json', { 
-      outputFile: `results/test-results_${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.json`
+      outputFile: `results/test-results.json`
     }],
     [path.resolve(__dirname, './log-on-fail-reporter.ts')]
   ],
